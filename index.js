@@ -28,7 +28,7 @@ app.use(express.json());
 app.use(express.static("build"));
 
 app.get("/", (req, res) => {
-  res.send("<h1>Hello World Hiiii</h1>");
+  res.send("<h1>Hello World Hi</h1>");
 });
 
 app.get("/api/notes", (req, res) => {
