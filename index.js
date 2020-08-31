@@ -27,7 +27,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("<h1>Hello World</h1>");
+  res.send("<h1>Hello World Hiiii</h1>");
 });
 
 app.get("/api/notes", (req, res) => {
