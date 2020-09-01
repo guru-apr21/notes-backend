@@ -1,27 +1,8 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-
-let notes = [
-  {
-    id: 1,
-    content: "HTML is easy",
-    date: "2019-05-30T17:30:31.098Z",
-    important: true,
-  },
-  {
-    id: 2,
-    content: "Browser can execute only Javascript",
-    date: "2019-05-30T18:39:34.091Z",
-    important: false,
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    date: "2019-05-30T19:20:14.298Z",
-    important: true,
-  },
-];
+require("./config/db")();
+const Note = require("./models/Note");
 
 app.use(cors());
 app.use(express.json());
@@ -31,39 +12,39 @@ app.get("/", (req, res) => {
   res.send("<h1>Hello World Hi</h1>");
 });
 
-app.get("/api/notes", (req, res) => {
+app.get("/api/notes", async (req, res) => {
+  const notes = await Note.find();
   res.json(notes);
 });
 
-app.get("/api/notes/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const note = notes.find((n) => n.id === id);
-  if (note) return res.json(note);
-  res.status(404).end();
+app.get("/api/notes/:id", async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    res.json(note);
+  } catch (err) {
+    console.log("Something failed");
+    res.end();
+  }
 });
 
-app.delete("/api/notes/:id", (req, res) => {
-  const id = Number(req.params.id);
-  notes = notes.filter((n) => n.id !== id);
+app.delete("/api/notes/:id", async (req, res) => {
+  await Note.findByIdAndDelete(req.params.id);
   res.status(204).end();
 });
 
-app.post("/api/notes", (req, res) => {
-  let note = req.body;
-  if (!note.content)
+app.post("/api/notes", async (req, res) => {
+  if (!req.body.content)
     return res.status(400).json({ error: "Content is required" });
 
-  const id = notes[notes.length - 1].id + 1;
-
   const { content, important } = req.body;
-  note = {
+
+  let note = new Note({
     content,
-    id,
     date: new Date(),
     important: important || false,
-  };
-  notes = [...notes, note];
+  });
 
+  note = await note.save();
   res.json(note);
 });
 
