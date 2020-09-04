@@ -4,7 +4,7 @@ const noteSchema = new mongoose.Schema({
   content: { type: String, required: true, minlength: 5 },
   date: { type: Date, default: new Date(), required: true },
   important: Boolean,
-  user: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
